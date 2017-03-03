@@ -1,0 +1,416 @@
+CCS PCH C Compiler, Version 4.084, 5967               18-Sep-16 18:36
+
+               Filename: Project.lst
+
+               ROM used: 540 bytes (2%)
+                         Largest free fragment is 30176
+               RAM used: 16 (1%) at main() level
+                         17 (1%) worst case
+               Stack:    1 locations
+
+*
+0800:  GOTO   0858
+.................... #include <18F4550.h> 
+.................... //////// Standard Header file for the PIC18F4550 device //////////////// 
+.................... #device PIC18F4550 
+.................... #list 
+....................  
+.................... #device adc=10 
+.................... #use delay(clock=48M)  
+*
+0808:  MOVLW  01
+080A:  SUBWF  10,F
+080C:  BNC   0826
+080E:  CLRF   FEA
+0810:  MOVLW  10
+0812:  MOVWF  FE9
+0814:  MOVF   FEF,W
+0816:  BZ    0826
+0818:  MOVLW  02
+081A:  MOVWF  00
+081C:  DECFSZ 00,F
+081E:  BRA    081C
+0820:  BRA    0822
+0822:  DECFSZ FEF,F
+0824:  BRA    0818
+0826:  RETLW  00
+*
+0830:  CLRF   FEA
+0832:  MOVLW  11
+0834:  MOVWF  FE9
+0836:  MOVF   FEF,W
+0838:  BZ    0856
+083A:  MOVLW  0F
+083C:  MOVWF  01
+083E:  CLRF   00
+0840:  DECFSZ 00,F
+0842:  BRA    0840
+0844:  DECFSZ 01,F
+0846:  BRA    083E
+0848:  MOVLW  8F
+084A:  MOVWF  00
+084C:  DECFSZ 00,F
+084E:  BRA    084C
+0850:  NOP   
+0852:  DECFSZ FEF,F
+0854:  BRA    083A
+0856:  RETLW  00
+.................... #fuses  HSPLL,  NOWDT,  NOBROWNOUT,  NOPROTECT,  NOLVP,  NODEBUG,  USBDIV,  PLL5, CPUDIV1, VREGEN, MCLR, NOPBADEN, WRTB, CPB,NOCPD,NOPUT 
+.................... #build(reset=0x000800,interrupt=0x000808:0x000818)  
+.................... #ORG 0x0000,0x07ff {} 
+.................... #use rs232(baud=9600,BITS =8,PARITY=N, xmit=PIN_C6, rcv=PIN_C7) 
+*
+0828:  BTFSS  F9E.4
+082A:  BRA    0828
+082C:  MOVWF  FAD
+082E:  RETLW  00
+.................... //!#use I2C(MASTER,sda=PIN_B0,scl=PIN_B1,force_hw)  
+....................  
+.................... //!// CONSTANTES UTILIZADAS PARA LA EEPROM AT24C1024B 
+.................... //!#define EE_dev_addr 0xA0 
+.................... //!#define EE_P0_0 0x00 
+.................... //!#define EE_P0_1 0x02 
+.................... //! 
+.................... //!/*****************FUNCION GLOBAL PARA  ESCRITURA DE EEPROM*********************/ 
+.................... //!void I2C_snd_char(unsigned short ee_p0 ,unsigned short addr1 ,unsigned short addr2 ,unsigned short send_data) { 
+.................... //!                i2c_start(); 
+.................... //!                I2C_write(EE_dev_addr|ee_p0); 
+.................... //!                I2C_write(addr2); 
+.................... //!                I2C_write(addr1); 
+.................... //!                I2C_write(send_data); 
+.................... //!                I2C_stop(); 
+.................... //!                delay_ms(10); 
+.................... //!} 
+.................... //! 
+.................... //!/*******************FUNCION GLOBAL PARA LECTURA DE EEPROM**********************/ 
+.................... //!BYTE I2C_rcv_char(unsigned short ee_p0 ,unsigned short addr1 ,unsigned short addr2) { 
+.................... //!                BYTE c; 
+.................... //!                I2C_start(); 
+.................... //!                I2C_write(EE_dev_addr | ee_p0); 
+.................... //!                I2C_write(addr2); 
+.................... //!                I2C_write(addr1); 
+.................... //!                I2C_start(); 
+.................... //!                I2C_write(EE_dev_addr | ee_p0 | 0x01); 
+.................... //!                c = I2C_read(0); 
+.................... //!                I2C_stop(); 
+.................... //!                return c; 
+.................... //!} 
+....................  
+....................  
+.................... void main(void) 
+....................    { 
+*
+0858:  CLRF   FF8
+085A:  BCF    FD0.7
+085C:  CLRF   FEA
+085E:  CLRF   FE9
+0860:  BSF    FB8.3
+0862:  MOVLW  E1
+0864:  MOVWF  FAF
+0866:  MOVLW  04
+0868:  MOVWF  FB0
+086A:  MOVLW  A6
+086C:  MOVWF  FAC
+086E:  MOVLW  90
+0870:  MOVWF  FAB
+0872:  MOVF   FC1,W
+0874:  ANDLW  C0
+0876:  IORLW  0F
+0878:  MOVWF  FC1
+087A:  MOVLW  07
+087C:  MOVWF  FB4
+....................    int16 val,valR; 
+....................    int datoTX[2]; 
+....................    int datoTX2[2]; 
+....................    char c; 
+....................    int adress; 
+....................    // SETUP REGISTROS 
+....................    setup_comparator(NC_NC_NC_NC);   //Los comparadores Analogicos estaran apagados. 
+087E:  MOVLW  07
+0880:  MOVWF  FB4
+0882:  MOVF   F92,W
+0884:  MOVWF  F92
+0886:  MOVLW  27
+0888:  MOVWF  00
+088A:  DECFSZ 00,F
+088C:  BRA    088A
+088E:  BRA    0890
+0890:  MOVF   FB4,W
+0892:  BCF    FA1.6
+....................    setup_adc_ports(AN0_to_AN2|VSS_VDD);   //AN0 sera analogica las demas Digitales. 
+0894:  MOVF   FC1,W
+0896:  ANDLW  C0
+0898:  IORLW  0C
+089A:  MOVWF  FC1
+....................    SETUP_ADC(ADC_CLOCK_INTERNAL);   //La fuente de reloj para la conversion sera 
+089C:  BSF    FC0.0
+089E:  BSF    FC0.1
+08A0:  BSF    FC0.2
+08A2:  BSF    FC0.7
+08A4:  BSF    FC2.0
+....................   
+....................   inicio:  
+....................   adress=0; 
+08A6:  CLRF   0F
+....................        do { 
+....................      c=getc(); 
+08A8:  BTFSS  F9E.5
+08AA:  BRA    08A8
+08AC:  MOVFF  FAE,0E
+....................      delay_us(100); 
+08B0:  MOVLW  64
+08B2:  MOVWF  10
+08B4:  RCALL  0808
+....................           } while(c!='1' && c!='2' && c!='3'); 
+08B6:  MOVF   0E,W
+08B8:  SUBLW  31
+08BA:  BZ    08C8
+08BC:  MOVF   0E,W
+08BE:  SUBLW  32
+08C0:  BZ    08C8
+08C2:  MOVF   0E,W
+08C4:  SUBLW  33
+08C6:  BNZ   08A8
+....................  
+....................        switch (c) 
+....................                  { 
+08C8:  MOVF   0E,W
+08CA:  XORLW  31
+08CC:  BZ    08D8
+08CE:  XORLW  03
+08D0:  BZ    0918
+08D2:  XORLW  01
+08D4:  BZ    09A8
+08D6:  BRA    0A1E
+....................                   case '1':      //Lectura en tiempo real  
+....................                       { 
+....................                       SET_ADC_CHANNEL(0);      //Lectura canal AN0. 
+08D8:  MOVLW  00
+08DA:  MOVWF  01
+08DC:  MOVF   FC2,W
+08DE:  ANDLW  C3
+08E0:  IORWF  01,W
+08E2:  MOVWF  FC2
+....................                       val=read_adc(); 
+08E4:  BSF    FC2.1
+08E6:  BTFSC  FC2.1
+08E8:  BRA    08E6
+08EA:  MOVFF  FC3,06
+08EE:  MOVFF  FC4,07
+....................                       datoTX[0]=val >> 8;     //Asignacion de desplazamiento hacia la derecha                                             
+08F2:  MOVFF  07,0A
+....................                       datoTX[1]=val & 0xFF;   //Asignacion AND de Bits   
+08F6:  MOVFF  06,0B
+....................                       delay_us(100);          //Tiempo de Muestreo Señal 
+08FA:  MOVLW  64
+08FC:  MOVWF  10
+08FE:  RCALL  0808
+....................                       putc(datoTX[0]);            
+0900:  MOVF   0A,W
+0902:  RCALL  0828
+....................                       putc(datoTX[1]);        //Envio de Datos 
+0904:  MOVF   0B,W
+0906:  RCALL  0828
+....................                       delay_us(5); 
+0908:  MOVLW  13
+090A:  MOVWF  00
+090C:  DECFSZ 00,F
+090E:  BRA    090C
+0910:  BRA    0912
+....................                       output_low(PIN_C0); 
+0912:  BCF    F94.0
+0914:  BCF    F8B.0
+....................                       
+....................                       goto inicio; 
+0916:  BRA    08A6
+....................                       } //end case 1 
+....................                                              
+....................                   case '2': //Guardar datos 
+....................                       {               
+....................                     for (adress=0; adress<=255;adress++) 
+0918:  CLRF   0F
+....................                         {      
+....................                          SET_ADC_CHANNEL(0);       //Lectura canal AN0. 
+091A:  MOVLW  00
+091C:  MOVWF  01
+091E:  MOVF   FC2,W
+0920:  ANDLW  C3
+0922:  IORWF  01,W
+0924:  MOVWF  FC2
+....................                          val=read_adc(); 
+0926:  BSF    FC2.1
+0928:  BTFSC  FC2.1
+092A:  BRA    0928
+092C:  MOVFF  FC3,06
+0930:  MOVFF  FC4,07
+....................                          delay_ms(5); 
+0934:  MOVLW  05
+0936:  MOVWF  11
+0938:  RCALL  0830
+....................                          write_eeprom(adress,val); 
+093A:  MOVFF  0F,FA9
+093E:  MOVFF  06,FA8
+0942:  BCF    FA6.6
+0944:  BCF    FA6.7
+0946:  BSF    FA6.2
+0948:  MOVFF  FF2,00
+094C:  BCF    FF2.7
+094E:  MOVLB  F
+0950:  MOVLW  55
+0952:  MOVWF  FA7
+0954:  MOVLW  AA
+0956:  MOVWF  FA7
+0958:  BSF    FA6.1
+095A:  BTFSC  FA6.1
+095C:  BRA    095A
+095E:  BCF    FA6.2
+0960:  MOVF   00,W
+0962:  IORWF  FF2,F
+....................                          delay_ms(5); 
+0964:  MOVLW  05
+0966:  MOVWF  11
+0968:  MOVLB  0
+096A:  RCALL  0830
+....................                          // write_eeprom(adress+20,datoTX[1]);    
+....................                              if (adress==254 ){  
+096C:  MOVF   0F,W
+096E:  SUBLW  FE
+0970:  BNZ   0984
+....................                         output_high(PIN_C0);  
+0972:  BCF    F94.0
+0974:  BSF    F8B.0
+....................                         delay_ms(700); } 
+0976:  MOVLW  04
+0978:  MOVWF  10
+097A:  MOVLW  AF
+097C:  MOVWF  11
+097E:  RCALL  0830
+0980:  DECFSZ 10,F
+0982:  BRA    097A
+....................                          c=getc(); 
+0984:  BTFSS  F9E.5
+0986:  BRA    0984
+0988:  MOVFF  FAE,0E
+....................                          delay_us(50); 
+098C:  MOVLW  C7
+098E:  MOVWF  00
+0990:  DECFSZ 00,F
+0992:  BRA    0990
+0994:  BRA    0996
+....................                        if (adress==255 && c!='2')   
+0996:  INCFSZ 0F,W
+0998:  BRA    09A2
+099A:  MOVF   0E,W
+099C:  SUBLW  32
+099E:  BZ    09A2
+....................                           {goto inicio;} 
+09A0:  BRA    08A6
+....................                         
+....................                         } //end for 
+09A2:  INCF   0F,F
+09A4:  BRA    091A
+.................... //!                       second: 
+.................... //!                       c=getc(); 
+.................... //!                       if (adress==128 && c!='2') {goto inicio;} 
+.................... //!                       else {goto second;} 
+.................... //! 
+.................... //!                goto second; 
+....................  
+....................                      goto inicio; 
+09A6:  BRA    08A6
+....................                        }//end case 2 
+....................                             
+....................                   case '3': //Mostrar datos 
+....................                        {                
+....................                      for (adress=0; adress<=255;adress++) 
+09A8:  CLRF   0F
+....................                          {      
+....................                           valR= read_eeprom(adress); 
+09AA:  MOVFF  FF2,10
+09AE:  BCF    FF2.7
+09B0:  MOVFF  0F,FA9
+09B4:  BCF    FA6.6
+09B6:  BCF    FA6.7
+09B8:  BSF    FA6.0
+09BA:  MOVF   FA8,W
+09BC:  BTFSC  10.7
+09BE:  BSF    FF2.7
+09C0:  CLRF   09
+09C2:  MOVWF  08
+....................                           // datoTX2[1]= read_eeprom(adress+20); 
+....................                           datoTX2[0]=valR >> 8;     //Asignacion de desplazamiento hacia la derecha                                             
+09C4:  MOVFF  09,0C
+....................                           datoTX2[1]=valR & 0xFF; //Asignacion AND de Bits   
+09C8:  MOVFF  08,0D
+....................                           putc(datoTX2[0]); 
+09CC:  MOVF   0C,W
+09CE:  RCALL  0828
+....................                           putc(datoTX2[1]); 
+09D0:  MOVF   0D,W
+09D2:  RCALL  0828
+....................                           delay_us(5); 
+09D4:  MOVLW  13
+09D6:  MOVWF  00
+09D8:  DECFSZ 00,F
+09DA:  BRA    09D8
+09DC:  BRA    09DE
+....................                            if (adress==254 ){  
+09DE:  MOVF   0F,W
+09E0:  SUBLW  FE
+09E2:  BNZ   09F6
+....................                         output_high(PIN_C0);  
+09E4:  BCF    F94.0
+09E6:  BSF    F8B.0
+....................                         delay_ms(700); } 
+09E8:  MOVLW  04
+09EA:  MOVWF  10
+09EC:  MOVLW  AF
+09EE:  MOVWF  11
+09F0:  RCALL  0830
+09F2:  DECFSZ 10,F
+09F4:  BRA    09EC
+....................                           output_low(PIN_C0); 
+09F6:  BCF    F94.0
+09F8:  BCF    F8B.0
+....................                           c=getc(); 
+09FA:  BTFSS  F9E.5
+09FC:  BRA    09FA
+09FE:  MOVFF  FAE,0E
+....................                           delay_us(50); 
+0A02:  MOVLW  C7
+0A04:  MOVWF  00
+0A06:  DECFSZ 00,F
+0A08:  BRA    0A06
+0A0A:  BRA    0A0C
+....................                            if (adress==255 && c!='3')   
+0A0C:  INCFSZ 0F,W
+0A0E:  BRA    0A18
+0A10:  MOVF   0E,W
+0A12:  SUBLW  33
+0A14:  BZ    0A18
+....................                            {goto inicio;} 
+0A16:  BRA    08A6
+....................                          } //end for 
+0A18:  INCF   0F,F
+0A1A:  BRA    09AA
+....................                           goto inicio; 
+0A1C:  BRA    08A6
+....................                         }//end case 3 
+....................                }//end switch 
+.................... }//end void 
+....................     
+....................     
+....................     
+....................                                     
+....................  
+....................    
+0A1E:  SLEEP 
+
+Configuration Fuses:
+   Word  1: 0E24   NOIESO NOFCMEN HSPLL PLL5 CPUDIV1 USBDIV
+   Word  2: 1E39   NOBROWNOUT NOWDT BORV20 NOPUT WDT32768 VREGEN
+   Word  3: 8100   NOPBADEN CCP2C1 MCLR NOLPT1OSC RESERVED
+   Word  4: 0081   STVREN NODEBUG NOLVP NOXINST NOICPRT RESERVED
+   Word  5: 800F   NOPROTECT NOCPD CPB
+   Word  6: A00F   NOWRT NOWRTD NOWRTC WRTB
+   Word  7: 400F   NOEBTR NOEBTRB

@@ -1,0 +1,46 @@
+
+ROM used: 540 (2%)
+          544 (2%) including unused fragments
+
+          1 Average locations per line
+          9 Average locations per statement
+
+RAM used: 16 (1%) at main() level
+          17 (1%) worst case
+
+Stack used: 1 worst case (out of 31 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+  136    59 100  Project.c
+  430     0   0  18F4550.h
+----- -----
+  566    59 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0     40   4   1             @delay_ms1
+0     32   3   1             @delay_us1
+0      8   1   0             @PUTCHARI_BIU_1
+0    456  42  11  2238 11.0  main
+
+Program metrics:
+    Functions               1
+    Statements              59
+    Comments                163
+    Volume (V)              2246
+    Difficilty (D)          10.8
+    Effort to implement (E) 24177
+    Time to implement (T)   22 minutes
+    Est Delivered Bugs (B)  0
+    Cyclomatic Complexity   10
+    Maintainability (MI)    103
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-007FE     0  2048  
+00800-00806     4  4  
+00808-07FFE   536  30176  
+
+
+

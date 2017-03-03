@@ -1,0 +1,68 @@
+000     @SCRATCH
+001     @SCRATCH
+001     _RETURN_
+002     @SCRATCH
+003     @SCRATCH
+004     @SCRATCH
+006-007 main.val
+008-009 main.valR
+00A-00B main.datoTX
+00C-00D main.datoTX2
+00E     main.c
+00F     main.adress
+010     @delay_us1.P1
+010     main.@SCRATCH1
+011     @delay_ms1.P1
+F83     PSP_DATA
+FB4.6   C1OUT
+FB4.7   C2OUT
+FBB     CCP_2_HIGH
+FBB     CCP_2_LOW
+FBB     CCP_2
+FBE     CCP_1_LOW
+FBE     CCP_1_HIGH
+FBE     CCP_1
+FE9-FEA @READ_PROGRAM_MEMORY.P1
+FE9-FEA @WRITE_PROGRAM_MEMORY.P2
+FF6-FF8 @READ_PROGRAM_MEMORY.P1
+FF6-FF8 @WRITE_PROGRAM_MEMORY.P2
+
+ROM Allocation:
+0830  @delay_ms1
+0808  @delay_us1
+0828  @PUTCHARI_BIU_1
+0858  main
+0858  @cinit
+0453  inicio
+
+
+User Memory space: 
+
+Project Directory:
+    D:\DOCUMENTOS\ELECTRÓNICA\ECG\Mejora ECG\
+
+Project Files:
+    Project.c
+    18F4550.h
+
+Units:
+    Project.c (main)
+
+Compiler Settings:
+    Processor:      PIC18F4550
+    Pointer Size:   16
+    ADC Range:      0-1023
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+
+Output Files:
+    Errors:      Project.err
+    Ext Symbols: Project.esym
+    INHX32:      Project.hex
+    Symbols:     Project.sym
+    List:        Project.lst
+    Debug/COFF:  Project.cof
+    Project:     Project.PJT
+    Call Tree:   Project.tre
+    Statistics:  Project.sta

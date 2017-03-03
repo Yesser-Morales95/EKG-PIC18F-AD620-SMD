@@ -1,0 +1,4 @@
+>>> Warning 203 "Project.c" Line 58(1,1): Condition always TRUE
+>>> Warning 202 "Project.c" Line 46(18,22): Variable never used:   valR
+      Memory usage:   ROM=3%      RAM=1% - 2%
+      0 Errors,  2 Warnings.

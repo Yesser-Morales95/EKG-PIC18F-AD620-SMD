@@ -1,0 +1,79 @@
+#include <18F4550.h>
+#device adc=10
+#use delay(clock=48000000) 
+#fuses  HSPLL,  NOWDT,  NOBROWNOUT,  NOPROTECT,  NOLVP,  NODEBUG,  USBDIV,  PLL5, CPUDIV1, VREGEN, MCLR, NOPBADEN, WRTB, CPB,NOCPD
+#build(reset=0x000800,interrupt=0x000808:0x000818) 
+#ORG 0x0000,0x07ff {}
+
+//#use rs232(baud=9600,xmit=pin_c6,rcv=pin_c7,PARITY=N, bits=8)
+#use rs232(baud=9600,BITS =8,PARITY=N, xmit=PIN_C6, rcv=PIN_C7)
+#use I2C(MASTER,sda=PIN_B0,scl=PIN_B1,force_hw) 
+
+// CONSTANTES UTILIZADAS PARA LA EEPROM AT24C1024B
+#define EE_dev_addr 0xA0
+#define EE_P0_0 0x00
+#define EE_P0_1 0x02
+
+/*****************FUNCION GLOBAL PARA  ESCRITURA DE EEPROM*********************/
+void I2C_snd_char(unsigned short ee_p0 ,unsigned short addr1 ,unsigned short addr2 ,unsigned short send_data) {
+                i2c_start();
+                I2C_write(EE_dev_addr|ee_p0);
+                I2C_write(addr2);
+                I2C_write(addr1);
+                I2C_write(send_data);
+                I2C_stop();
+                delay_ms(10);
+}
+
+/*******************FUNCION GLOBAL PARA LECTURA DE EEPROM**********************/
+BYTE I2C_rcv_char(unsigned short ee_p0 ,unsigned short addr1 ,unsigned short addr2) {
+                BYTE c;
+                I2C_start();
+                I2C_write(EE_dev_addr | ee_p0);
+                I2C_write(addr2);
+                I2C_write(addr1);
+                I2C_start();
+                I2C_write(EE_dev_addr | ee_p0 | 0x01);
+                c = I2C_read(0);
+                I2C_stop();
+                return c;
+}
+
+
+
+
+void main(void){
+   int16 val;
+   int datoTX[2];
+   
+
+   setup_comparator(NC_NC_NC_NC);   //Los comparadores Analogicos estaran apagados.
+   setup_adc_ports(AN0_to_AN2|VSS_VDD);   //AN0 sera analogica las demas Digitales.
+   SETUP_ADC(ADC_CLOCK_INTERNAL);   //La fuente de reloj para la conversion sera
+   output_high(PIN_C0);
+  
+   
+   
+   
+                                    //El circuito RC interno del PIC, su TAD tipico
+                                    //es de 4us.
+
+while(1)
+{
+   SET_ADC_CHANNEL(0);       //Lectura canal AN0.
+     val=read_adc();
+       datoTX[0]=val >> 8;   //Asignacion de desplazamiento
+                             //hacia la derecha
+       datoTX[1]=val & 0xFF; //Asignacion AND de Bits  
+        delay_us(100);       //Tiempo de Muestreo Señal
+   putc(datoTX[0]);           
+   putc(datoTX[1]);          //Envio de Datos
+    delay_us(5);
+}
+       
+       }
+   
+   
+   
+                                    //Inicia el ciclo Infinito.
+

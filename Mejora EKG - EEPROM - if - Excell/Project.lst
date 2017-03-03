@@ -1,0 +1,598 @@
+CCS PCH C Compiler, Version 4.084, 5967               06-Oct-16 23:51
+
+               Filename: D:\DOCUMENTOS\ELECTRÓNICA\ECG\Mejora ECG - EEPROM - if - Excell\Project.lst
+
+               ROM used: 948 bytes (3%)
+                         Largest free fragment is 29768
+               RAM used: 24 (1%) at main() level
+                         34 (2%) worst case
+               Stack:    2 locations
+
+*
+0800:  GOTO   08FC
+.................... #include <18F4550.h> 
+.................... //////// Standard Header file for the PIC18F4550 device //////////////// 
+.................... #device PIC18F4550 
+.................... #list 
+....................  
+.................... #device adc=10 
+.................... #use delay(clock=48M)  
+*
+0808:  CLRF   FEA
+080A:  MOVLW  19
+080C:  MOVWF  FE9
+080E:  MOVF   FEF,W
+0810:  BZ    082E
+0812:  MOVLW  0F
+0814:  MOVWF  01
+0816:  CLRF   00
+0818:  DECFSZ 00,F
+081A:  BRA    0818
+081C:  DECFSZ 01,F
+081E:  BRA    0816
+0820:  MOVLW  8F
+0822:  MOVWF  00
+0824:  DECFSZ 00,F
+0826:  BRA    0824
+0828:  NOP   
+082A:  DECFSZ FEF,F
+082C:  BRA    0812
+082E:  RETLW  00
+.................... #fuses  HSPLL,  NOWDT,  NOBROWNOUT,  NOPROTECT,  NOLVP,  NODEBUG,  USBDIV,  PLL5, CPUDIV1, VREGEN, MCLR, NOPBADEN, WRTB, CPB,NOCPD,NOPUT 
+.................... #build(reset=0x000800,interrupt=0x000808:0x000818)  
+.................... #ORG 0x0000,0x07ff {} 
+.................... #use rs232(baud=9600,BITS =8,PARITY=N, xmit=PIN_C6, rcv=PIN_C7) 
+0830:  BTFSS  F9E.4
+0832:  BRA    0830
+0834:  MOVWF  FAD
+0836:  RETLW  00
+.................... #use I2C(MASTER,sda=PIN_B0,scl=PIN_B1,force_hw)  
+0838:  BCF    FC6.7
+083A:  BCF    F9E.3
+083C:  MOVFF  22,FC9
+0840:  MOVLW  02
+0842:  BTFSC  FC6.7
+0844:  BRA    0850
+0846:  BTFSS  F9E.3
+0848:  BRA    0846
+084A:  MOVLW  00
+084C:  BTFSC  FC5.6
+084E:  MOVLW  01
+0850:  MOVWF  01
+0852:  RETLW  00
+*
+0888:  BSF    FC5.3
+088A:  BTFSC  FC5.3
+088C:  BRA    088A
+088E:  BTFSC  00.0
+0890:  BCF    FC5.5
+0892:  BTFSS  00.0
+0894:  BSF    FC5.5
+0896:  BSF    FC5.4
+0898:  BTFSC  FC5.4
+089A:  BRA    0898
+089C:  MOVFF  FC9,01
+08A0:  GOTO   08EC (RETURN)
+.................... #use standard_io(B) 
+....................  
+.................... // CONSTANTES UTILIZADAS PARA LA EEPROM AT24C1024B 
+.................... #define EE_dev_addr 0xA0 
+.................... #define EE_P0_0 0x08 
+.................... #define EE_P0_1 0x0A 
+.................... #define EE_P0_2 0x0C 
+.................... #define EE_P0_3 0x0E 
+....................  
+.................... /*****************FUNCION GLOBAL PARA  ESCRITURA DE EEPROM*********************/ 
+.................... void I2C_snd_char(int16 ee_p0 ,int16 addr1 ,int16 send_data) { 
+....................                 i2c_start(); 
+*
+0854:  BSF    FC5.0
+0856:  BTFSC  FC5.0
+0858:  BRA    0856
+....................                 I2C_write(EE_dev_addr|ee_p0); 
+085A:  MOVF   19,W
+085C:  IORLW  A0
+085E:  MOVWF  1F
+0860:  MOVFF  1A,20
+0864:  MOVWF  22
+0866:  RCALL  0838
+....................                 I2C_write(addr1>>8); 
+0868:  MOVFF  1C,1F
+086C:  CLRF   20
+086E:  MOVFF  1C,22
+0872:  RCALL  0838
+....................                 I2C_write(addr1); 
+0874:  MOVFF  1B,22
+0878:  RCALL  0838
+....................                 I2C_write(send_data); 
+087A:  MOVFF  1D,22
+087E:  RCALL  0838
+....................                 I2C_stop(); 
+0880:  BSF    FC5.2
+0882:  BTFSC  FC5.2
+0884:  BRA    0882
+....................                  
+.................... } 
+0886:  RETLW  00
+....................  
+.................... /*******************FUNCION GLOBAL PARA LECTURA DE EEPROM**********************/ 
+.................... BYTE I2C_rcv_char(int16 ee_p0 ,int16 addr1) { 
+....................                 BYTE c; 
+....................                 I2C_start(); 
+*
+08A4:  BSF    FC5.0
+08A6:  BTFSC  FC5.0
+08A8:  BRA    08A6
+....................                 I2C_write(EE_dev_addr | ee_p0); 
+08AA:  MOVF   19,W
+08AC:  IORLW  A0
+08AE:  MOVWF  1E
+08B0:  MOVFF  1A,1F
+08B4:  MOVWF  22
+08B6:  RCALL  0838
+....................                 I2C_write(addr1>>8); 
+08B8:  MOVFF  1C,1E
+08BC:  CLRF   1F
+08BE:  MOVFF  1C,22
+08C2:  RCALL  0838
+....................                 I2C_write(addr1); 
+08C4:  MOVFF  1B,22
+08C8:  RCALL  0838
+....................                 I2C_start(); 
+08CA:  BSF    FC5.1
+08CC:  BTFSC  FC5.1
+08CE:  BRA    08CC
+....................                 I2C_write(EE_dev_addr | ee_p0 | 0x01); 
+08D0:  MOVF   19,W
+08D2:  IORLW  A0
+08D4:  MOVWF  1E
+08D6:  MOVFF  1A,1F
+08DA:  MOVF   1E,W
+08DC:  IORLW  01
+08DE:  MOVWF  20
+08E0:  MOVFF  1A,21
+08E4:  MOVWF  22
+08E6:  RCALL  0838
+....................                 c = I2C_read(0); 
+08E8:  CLRF   00
+08EA:  BRA    0888
+08EC:  MOVFF  01,1D
+....................                 I2C_stop(); 
+08F0:  BSF    FC5.2
+08F2:  BTFSC  FC5.2
+08F4:  BRA    08F2
+....................                 return c; 
+08F6:  MOVFF  1D,01
+.................... } 
+08FA:  RETLW  00
+....................  
+....................  
+.................... void main(void) 
+....................    { 
+08FC:  CLRF   FF8
+08FE:  BCF    FD0.7
+0900:  CLRF   FEA
+0902:  CLRF   FE9
+0904:  BSF    FB8.3
+0906:  MOVLW  E1
+0908:  MOVWF  FAF
+090A:  MOVLW  04
+090C:  MOVWF  FB0
+090E:  MOVLW  A6
+0910:  MOVWF  FAC
+0912:  MOVLW  90
+0914:  MOVWF  FAB
+0916:  BSF    F93.1
+0918:  BSF    F93.0
+091A:  MOVLW  77
+091C:  MOVWF  FC8
+091E:  MOVLW  28
+0920:  MOVWF  FC6
+0922:  BSF    FC7.7
+0924:  BCF    FC7.6
+0926:  MOVF   FC1,W
+0928:  ANDLW  C0
+092A:  IORLW  0F
+092C:  MOVWF  FC1
+092E:  MOVLW  07
+0930:  MOVWF  FB4
+....................    int16 i,j,val,valR; 
+....................    int datoTX[2]; 
+....................    int datoTX2[2]; 
+....................    int datoTX3[2]; 
+....................    char c; 
+....................    int16 adress,adress1; 
+....................    SET_TRIS_B(0xFF); 
+0932:  MOVLW  FF
+0934:  MOVWF  F93
+....................    // SETUP REGISTROS 
+....................    setup_comparator(NC_NC_NC_NC);   //Los comparadores Analogicos estaran apagados. 
+0936:  MOVLW  07
+0938:  MOVWF  FB4
+093A:  MOVF   F92,W
+093C:  MOVWF  F92
+093E:  MOVLW  27
+0940:  MOVWF  00
+0942:  DECFSZ 00,F
+0944:  BRA    0942
+0946:  BRA    0948
+0948:  MOVF   FB4,W
+094A:  BCF    FA1.6
+....................    setup_adc_ports(AN0_to_AN2|VSS_VDD);   //AN0 sera analogica las demas Digitales. 
+094C:  MOVF   FC1,W
+094E:  ANDLW  C0
+0950:  IORLW  0C
+0952:  MOVWF  FC1
+....................    SETUP_ADC(ADC_CLOCK_INTERNAL);   //La fuente de reloj para la conversion sera 
+0954:  BSF    FC0.0
+0956:  BSF    FC0.1
+0958:  BSF    FC0.2
+095A:  BSF    FC0.7
+095C:  BSF    FC2.0
+....................     
+....................  while(1){ 
+....................   inicio:  
+....................     adress=0; 
+095E:  CLRF   16
+0960:  CLRF   15
+....................        adress1=0; 
+0962:  CLRF   18
+0964:  CLRF   17
+....................        j=0; 
+0966:  CLRF   09
+0968:  CLRF   08
+....................        i=0; 
+096A:  CLRF   07
+096C:  CLRF   06
+....................      //  do { 
+....................      c=getc(); 
+096E:  BTFSS  F9E.5
+0970:  BRA    096E
+0972:  MOVFF  FAE,14
+....................    //  c='1'; 
+....................      //delay_us(1); 
+....................       //    } while(c!='1' && c!='2' && c!='3'); 
+.................... //!switch (c) 
+.................... //!{ 
+....................        if (c== '1') { 
+0976:  MOVF   14,W
+0978:  SUBLW  31
+097A:  BNZ   09B0
+....................                       SET_ADC_CHANNEL(0);      //Lectura canal AN0. 
+097C:  MOVLW  00
+097E:  MOVWF  01
+0980:  MOVF   FC2,W
+0982:  ANDLW  C3
+0984:  IORWF  01,W
+0986:  MOVWF  FC2
+....................                       val=read_adc();    
+0988:  BSF    FC2.1
+098A:  BTFSC  FC2.1
+098C:  BRA    098A
+098E:  MOVFF  FC3,0A
+0992:  MOVFF  FC4,0B
+....................                       delay_ms(10); 
+0996:  MOVLW  0A
+0998:  MOVWF  19
+099A:  RCALL  0808
+....................                       datoTX[0]=val >> 8;     //Asignacion de desplazamiento hacia la derecha                                             
+099C:  MOVFF  0B,0E
+....................                       datoTX[1]=val & 0xFF;   //Asignacion AND de Bits                                       //Tiempo de Muestreo Señal 
+09A0:  MOVFF  0A,0F
+....................                       putc(datoTX[0]);            
+09A4:  MOVF   0E,W
+09A6:  RCALL  0830
+....................                       putc(datoTX[1]);        //Envio de Datos 
+09A8:  MOVF   0F,W
+09AA:  RCALL  0830
+....................                      // delay_us(5); 
+....................                      output_high(PIN_C0);//LED is turned on to show that writing to the EEPROM has begun 
+09AC:  BCF    F94.0
+09AE:  BSF    F8B.0
+....................                      // goto inicio; 
+....................                       } 
+....................         if (c== '2') { 
+09B0:  MOVF   14,W
+09B2:  SUBLW  32
+09B4:  BTFSS  FD8.2
+09B6:  BRA    0AC2
+....................      output_high(PIN_C0);//LED is turned on to show that writing to the EEPROM has begun 
+09B8:  BCF    F94.0
+09BA:  BSF    F8B.0
+....................       
+....................      adress = 0x00; 
+09BC:  CLRF   16
+09BE:  CLRF   15
+....................         for (i=0; i<1000; i++){ 
+09C0:  CLRF   07
+09C2:  CLRF   06
+09C4:  MOVF   07,W
+09C6:  SUBLW  03
+09C8:  BNC   0A34
+09CA:  BNZ   09D2
+09CC:  MOVF   06,W
+09CE:  SUBLW  E7
+09D0:  BNC   0A34
+....................                          SET_ADC_CHANNEL(0);       //Lectura canal AN0. 
+09D2:  MOVLW  00
+09D4:  MOVWF  01
+09D6:  MOVF   FC2,W
+09D8:  ANDLW  C3
+09DA:  IORWF  01,W
+09DC:  MOVWF  FC2
+....................                          val=read_adc();   
+09DE:  BSF    FC2.1
+09E0:  BTFSC  FC2.1
+09E2:  BRA    09E0
+09E4:  MOVFF  FC3,0A
+09E8:  MOVFF  FC4,0B
+....................                          delay_ms(25); 
+09EC:  MOVLW  19
+09EE:  MOVWF  19
+09F0:  RCALL  0808
+....................                          datoTX2[0]=val >> 8;     //Asignacion de desplazamiento hacia la derecha                                             
+09F2:  MOVFF  0B,10
+....................                          datoTX2[1]=val & 0xFF;   //Asignacion AND de Bits                           
+09F6:  MOVFF  0A,11
+....................                    I2C_snd_char(EE_P0_0 ,adress ,datoTX2[0]);       // I2C SET 
+09FA:  CLRF   1A
+09FC:  MOVLW  08
+09FE:  MOVWF  19
+0A00:  MOVFF  16,1C
+0A04:  MOVFF  15,1B
+0A08:  CLRF   1E
+0A0A:  MOVFF  10,1D
+0A0E:  RCALL  0854
+....................                    I2C_snd_char(EE_P0_1 ,adress ,datoTX2[1]); 
+0A10:  CLRF   1A
+0A12:  MOVLW  0A
+0A14:  MOVWF  19
+0A16:  MOVFF  16,1C
+0A1A:  MOVFF  15,1B
+0A1E:  CLRF   1E
+0A20:  MOVFF  11,1D
+0A24:  RCALL  0854
+....................                     
+....................         adress++; // Increment up the address location on the EEPROM for the next time it writes something 
+0A26:  INCF   15,F
+0A28:  BTFSC  FD8.2
+0A2A:  INCF   16,F
+....................         } 
+0A2C:  INCF   06,F
+0A2E:  BTFSC  FD8.2
+0A30:  INCF   07,F
+0A32:  BRA    09C4
+....................         adress1 = 0x00; 
+0A34:  CLRF   18
+0A36:  CLRF   17
+....................         for (j=0; j<1000; j++){ 
+0A38:  CLRF   09
+0A3A:  CLRF   08
+0A3C:  MOVF   09,W
+0A3E:  SUBLW  03
+0A40:  BNC   0AAC
+0A42:  BNZ   0A4A
+0A44:  MOVF   08,W
+0A46:  SUBLW  E7
+0A48:  BNC   0AAC
+....................                          SET_ADC_CHANNEL(0);       //Lectura canal AN0. 
+0A4A:  MOVLW  00
+0A4C:  MOVWF  01
+0A4E:  MOVF   FC2,W
+0A50:  ANDLW  C3
+0A52:  IORWF  01,W
+0A54:  MOVWF  FC2
+....................                          val=read_adc(); 
+0A56:  BSF    FC2.1
+0A58:  BTFSC  FC2.1
+0A5A:  BRA    0A58
+0A5C:  MOVFF  FC3,0A
+0A60:  MOVFF  FC4,0B
+....................                          delay_ms(25); 
+0A64:  MOVLW  19
+0A66:  MOVWF  19
+0A68:  RCALL  0808
+....................                          datoTX2[0]=val >> 8;     //Asignacion de desplazamiento hacia la derecha                                             
+0A6A:  MOVFF  0B,10
+....................                          datoTX2[1]=val & 0xFF;   //Asignacion AND de Bits                           
+0A6E:  MOVFF  0A,11
+....................                    I2C_snd_char(EE_P0_2 ,adress1 ,datoTX2[0]);       // I2C SET 
+0A72:  CLRF   1A
+0A74:  MOVLW  0C
+0A76:  MOVWF  19
+0A78:  MOVFF  18,1C
+0A7C:  MOVFF  17,1B
+0A80:  CLRF   1E
+0A82:  MOVFF  10,1D
+0A86:  RCALL  0854
+....................                    I2C_snd_char(EE_P0_3 ,adress1 ,datoTX2[1]); 
+0A88:  CLRF   1A
+0A8A:  MOVLW  0E
+0A8C:  MOVWF  19
+0A8E:  MOVFF  18,1C
+0A92:  MOVFF  17,1B
+0A96:  CLRF   1E
+0A98:  MOVFF  11,1D
+0A9C:  RCALL  0854
+....................                     
+....................         adress1++; // Increment up the address location on the EEPROM for the next time it writes something 
+0A9E:  INCF   17,F
+0AA0:  BTFSC  FD8.2
+0AA2:  INCF   18,F
+....................         } 
+0AA4:  INCF   08,F
+0AA6:  BTFSC  FD8.2
+0AA8:  INCF   09,F
+0AAA:  BRA    0A3C
+....................        adress=0; 
+0AAC:  CLRF   16
+0AAE:  CLRF   15
+....................        adress1=0; 
+0AB0:  CLRF   18
+0AB2:  CLRF   17
+....................         j=0; 
+0AB4:  CLRF   09
+0AB6:  CLRF   08
+....................        i=0;  
+0AB8:  CLRF   07
+0ABA:  CLRF   06
+....................          
+....................      output_low(PIN_C0); // LED is turned off to show that writing to the EEPROM is complete 
+0ABC:  BCF    F94.0
+0ABE:  BCF    F8B.0
+....................      goto inicio; 
+0AC0:  BRA    095E
+....................     } 
+....................                           
+....................         if (c== '3') { 
+0AC2:  MOVF   14,W
+0AC4:  SUBLW  33
+0AC6:  BTFSS  FD8.2
+0AC8:  BRA    0BB4
+....................      output_high(PIN_C0);//LED is turned on to show that writing to the EEPROM has begun 
+0ACA:  BCF    F94.0
+0ACC:  BSF    F8B.0
+....................                                   
+....................            for (adress=0; adress<1000; adress++) {                              
+0ACE:  CLRF   16
+0AD0:  CLRF   15
+0AD2:  MOVF   16,W
+0AD4:  SUBLW  03
+0AD6:  BNC   0B22
+0AD8:  BNZ   0AE0
+0ADA:  MOVF   15,W
+0ADC:  SUBLW  E7
+0ADE:  BNC   0B22
+....................                           datoTX3[0] = I2C_rcv_char(EE_P0_0 ,adress);                         
+0AE0:  CLRF   1A
+0AE2:  MOVLW  08
+0AE4:  MOVWF  19
+0AE6:  MOVFF  16,1C
+0AEA:  MOVFF  15,1B
+0AEE:  RCALL  08A4
+0AF0:  MOVFF  01,12
+....................                           datoTX3[1] = I2C_rcv_char(EE_P0_1 ,adress);                           
+0AF4:  CLRF   1A
+0AF6:  MOVLW  0A
+0AF8:  MOVWF  19
+0AFA:  MOVFF  16,1C
+0AFE:  MOVFF  15,1B
+0B02:  RCALL  08A4
+0B04:  MOVFF  01,13
+....................                           putc(datoTX3[0]); 
+0B08:  MOVF   12,W
+0B0A:  RCALL  0830
+....................                           putc(datoTX3[1]); 
+0B0C:  MOVF   13,W
+0B0E:  RCALL  0830
+....................                           delay_us(10); 
+0B10:  MOVLW  27
+0B12:  MOVWF  00
+0B14:  DECFSZ 00,F
+0B16:  BRA    0B14
+0B18:  BRA    0B1A
+....................                                                 } 
+0B1A:  INCF   15,F
+0B1C:  BTFSC  FD8.2
+0B1E:  INCF   16,F
+0B20:  BRA    0AD2
+....................                                                             
+....................         for (adress1=0; adress1<1000; adress1++) {                              
+0B22:  CLRF   18
+0B24:  CLRF   17
+0B26:  MOVF   18,W
+0B28:  SUBLW  03
+0B2A:  BNC   0B76
+0B2C:  BNZ   0B34
+0B2E:  MOVF   17,W
+0B30:  SUBLW  E7
+0B32:  BNC   0B76
+....................                           datoTX3[0] = I2C_rcv_char(EE_P0_2 ,adress1);                         
+0B34:  CLRF   1A
+0B36:  MOVLW  0C
+0B38:  MOVWF  19
+0B3A:  MOVFF  18,1C
+0B3E:  MOVFF  17,1B
+0B42:  RCALL  08A4
+0B44:  MOVFF  01,12
+....................                           datoTX3[1] = I2C_rcv_char(EE_P0_3 ,adress1);                           
+0B48:  CLRF   1A
+0B4A:  MOVLW  0E
+0B4C:  MOVWF  19
+0B4E:  MOVFF  18,1C
+0B52:  MOVFF  17,1B
+0B56:  RCALL  08A4
+0B58:  MOVFF  01,13
+....................                           putc(datoTX3[0]); 
+0B5C:  MOVF   12,W
+0B5E:  RCALL  0830
+....................                           putc(datoTX3[1]); 
+0B60:  MOVF   13,W
+0B62:  RCALL  0830
+....................                           delay_us(10);                                                  
+0B64:  MOVLW  27
+0B66:  MOVWF  00
+0B68:  DECFSZ 00,F
+0B6A:  BRA    0B68
+0B6C:  BRA    0B6E
+....................                                                 }  
+0B6E:  INCF   17,F
+0B70:  BTFSC  FD8.2
+0B72:  INCF   18,F
+0B74:  BRA    0B26
+....................                             c=getc(); 
+0B76:  BTFSS  F9E.5
+0B78:  BRA    0B76
+0B7A:  MOVFF  FAE,14
+....................                           delay_us(50); 
+0B7E:  MOVLW  C7
+0B80:  MOVWF  00
+0B82:  DECFSZ 00,F
+0B84:  BRA    0B82
+0B86:  BRA    0B88
+....................                            if (adress==999 && adress1==999 && c=='3')   
+0B88:  MOVF   15,W
+0B8A:  SUBLW  E7
+0B8C:  BNZ   0BAE
+0B8E:  MOVF   16,W
+0B90:  SUBLW  03
+0B92:  BNZ   0BAE
+0B94:  MOVF   17,W
+0B96:  SUBLW  E7
+0B98:  BNZ   0BAE
+0B9A:  MOVF   18,W
+0B9C:  SUBLW  03
+0B9E:  BNZ   0BAE
+0BA0:  MOVF   14,W
+0BA2:  SUBLW  33
+0BA4:  BNZ   0BAE
+....................                            {adress=0;adress1=0;}  
+0BA6:  CLRF   16
+0BA8:  CLRF   15
+0BAA:  CLRF   18
+0BAC:  CLRF   17
+....................                            output_low(PIN_C0); // LED is turned off to show that writing to the EEPROM is complete 
+0BAE:  BCF    F94.0
+0BB0:  BCF    F8B.0
+....................                            goto inicio;                 
+0BB2:  BRA    095E
+....................                         }//end if 3 
+.................... }  
+0BB4:  BRA    095E
+.................... }//end void 
+....................     
+....................     
+....................     
+....................                                     
+....................  
+....................    
+0BB6:  SLEEP 
+
+Configuration Fuses:
+   Word  1: 0E24   NOIESO NOFCMEN HSPLL PLL5 CPUDIV1 USBDIV
+   Word  2: 1E39   NOBROWNOUT NOWDT BORV20 NOPUT WDT32768 VREGEN
+   Word  3: 8100   NOPBADEN CCP2C1 MCLR NOLPT1OSC RESERVED
+   Word  4: 0081   STVREN NODEBUG NOLVP NOXINST NOICPRT RESERVED
+   Word  5: 800F   NOPROTECT NOCPD CPB
+   Word  6: A00F   NOWRT NOWRTD NOWRTC WRTB
+   Word  7: 400F   NOEBTR NOEBTRB

@@ -1,0 +1,49 @@
+
+ROM used: 948 (3%)
+          952 (3%) including unused fragments
+
+          2 Average locations per line
+          10 Average locations per statement
+
+RAM used: 24 (1%) at main() level
+          34 (2%) worst case
+
+Stack used: 2 worst case (out of 31 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+  152    93 100  Project.c
+  430     0   0  18F4550.h
+----- -----
+  582    93 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0     40   2   1             @delay_ms1
+0      8   0   0             @PUTCHARI_BIU_1
+0     28   1   1             @I2C_WRITEU_1
+0     28   1   1             @I2C_READU_1
+0     52   3   8   165  3.0  I2C_snd_char
+0     88   5   9   265  3.8  I2C_rcv_char
+0    700  37  19  3509  9.0  MAIN
+
+Program metrics:
+    Functions               3
+    Statements              93
+    Comments                139
+    Volume (V)              4384
+    Difficilty (D)          15.8
+    Effort to implement (E) 69063
+    Time to implement (T)   1 hours, 4 minutes
+    Est Delivered Bugs (B)  1
+    Cyclomatic Complexity   8
+    Maintainability (MI)    32
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-007FE     0  2048  
+00800-00806     4  4  
+00808-07FFE   944  29768  
+
+
+

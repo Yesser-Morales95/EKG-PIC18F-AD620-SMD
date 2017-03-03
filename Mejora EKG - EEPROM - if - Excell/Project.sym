@@ -1,0 +1,87 @@
+000     @SCRATCH
+001     @SCRATCH
+001     _RETURN_
+002     @SCRATCH
+003     @SCRATCH
+004     @SCRATCH
+006-007 MAIN.i
+008-009 MAIN.j
+00A-00B MAIN.val
+00C-00D MAIN.valR
+00E-00F MAIN.datoTX
+010-011 MAIN.datoTX2
+012-013 MAIN.datoTX3
+014     MAIN.c
+015-016 MAIN.adress
+017-018 MAIN.adress1
+019-01A I2C_snd_char.ee_p0
+019     @delay_ms1.P1
+019-01A I2C_rcv_char.ee_p0
+01B-01C I2C_snd_char.addr1
+01B-01C I2C_rcv_char.addr1
+01D-01E I2C_snd_char.send_data
+01D     I2C_rcv_char.c
+01E     @I2C_READU_1.P1
+01E     I2C_rcv_char.@SCRATCH1
+01F     I2C_snd_char.@SCRATCH1
+01F     I2C_rcv_char.@SCRATCH2
+020     I2C_snd_char.@SCRATCH2
+020     I2C_rcv_char.@SCRATCH3
+021     I2C_rcv_char.@SCRATCH4
+022     @I2C_WRITEU_1.P1
+F83     PSP_DATA
+FB4.6   C1OUT
+FB4.7   C2OUT
+FBB     CCP_2_LOW
+FBB     CCP_2_HIGH
+FBB     CCP_2
+FBE     CCP_1_LOW
+FBE     CCP_1
+FBE     CCP_1_HIGH
+FE9-FEA @READ_PROGRAM_MEMORY.P1
+FE9-FEA @WRITE_PROGRAM_MEMORY.P2
+FF6-FF8 @READ_PROGRAM_MEMORY.P1
+FF6-FF8 @WRITE_PROGRAM_MEMORY.P2
+
+ROM Allocation:
+0808  @delay_ms1
+0830  @PUTCHARI_BIU_1
+0838  @I2C_WRITEU_1
+0888  @I2C_READU_1
+0854  I2C_snd_char
+08A4  I2C_rcv_char
+08FC  MAIN
+08FC  @cinit
+04AF  inicio
+
+
+User Memory space: 
+
+Project Directory:
+    D:\DOCUMENTOS\ELECTRÓNICA\ECG\Mejora ECG - EEPROM - if - Excell\
+
+Project Files:
+    Project.c
+    18F4550.h
+
+Units:
+    D:\DOCUMENTOS\ELECTRÓNICA\ECG\Mejora ECG - EEPROM - if - Excell\Project.c (main)
+
+Compiler Settings:
+    Processor:      PIC18F4550
+    Pointer Size:   16
+    ADC Range:      0-1023
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+
+Output Files:
+    Errors:      Project.err
+    Ext Symbols: Project.esym
+    INHX32:      Project.hex
+    Symbols:     Project.sym
+    List:        Project.lst
+    Debug/COFF:  Project.cof
+    Project:     Project.PJT
+    Call Tree:   Project.tre
+    Statistics:  Project.sta
